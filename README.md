@@ -9,3 +9,9 @@ Options :
  -m		play selected track from playlist
  -e		outputs the currently playing track
  ```
+
+# Connect to an api end point
+This is a simple firebase project that acts as an archive for stations and playlists
+```
+https://bagel-1d0b2.firebaseio.com/.json
+```
