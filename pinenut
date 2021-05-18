@@ -2,12 +2,17 @@
 
 firebaseURL=""
 
-# Play Music
 function playWithShuffle {
 	killall mpv
 	params=$([ "$1" == true ] && echo "--shuffle" || echo "")
 	echo $params
 	mpv --no-video $params --idle --input-ipc-server=/tmp/mpvsocket $2
+}
+
+function editPlaylist {
+	curl $firebaseURL | jq > /tmp/p.json
+	vim /tmp/p.json
+	curl -s -X PUT -H "Content-Type: application/json" -d @/tmp/p.json $firebaseURL > /dev/null
 }
 
 if [ "$1" == "-m" ]; then
@@ -20,17 +25,18 @@ if [ "$1" == "-m" ]; then
 			playWithShuffle false $url
 		fi
 	fi
-else
+fi
+
+if [ "$1" == "-e" ]; then
+	editPlaylist
+fi
+
+if [ "$1" == "" ]; then
 	echo "Pinenut v1.0 - A tiny rofi based music selector for mpv"
 	echo "Usage : pinenut [options]"
 	echo ""
 	echo "Options :"
 	echo " -m		play selected track from playlist"
-	echo " -e		outputs the currently playing track"
+	echo " -e		edit the playlist and post"
 	echo ""
-fi
-
-if [ "$1" == "-e" ]; then
-	out=$(echo '{ "command": ["get_property", "media-title"] }' | socat - /tmp/mpvsocket | jq ".data");
-	rofi -e "$out"
 fi
